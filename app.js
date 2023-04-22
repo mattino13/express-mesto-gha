@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 
 app.use('/', cardsRouter);
 app.use('/', usersRouter);
-app.use('*', (req, res) => { res.status(501).send({ message: 'Not implemented' }); });
+app.use('*', (req, res) => { res.status(404).send({ message: 'Not implemented' }); });
 
 app.listen(PORT, () => {
   console.log(`App starting on port ${PORT}`);

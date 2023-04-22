@@ -1,7 +1,7 @@
-const { ValidationError } = require('mongoose').Error;
+const { ValidationError, CastError } = require('mongoose').Error;
 
 const NOT_FOUND_HTTP_STATUS = 404;
-const VALIDATION_FAILED_HTTP_STATUS = 400;
+const BAD_REQUEST_HTTP_STATUS = 400;
 const COMMON_SERVER_ERROR_STATUS = 500;
 
 class NotFoundError extends Error {}
@@ -13,7 +13,12 @@ function handleHTTPError(err, res) {
   }
 
   if (err instanceof ValidationError) {
-    res.status(VALIDATION_FAILED_HTTP_STATUS).send({ message: `Произошла ошибка ${err}` });
+    res.status(BAD_REQUEST_HTTP_STATUS).send({ message: `Произошла ошибка ${err}` });
+    return;
+  }
+
+  if (err instanceof CastError) {
+    res.status(BAD_REQUEST_HTTP_STATUS).send({ message: `Произошла ошибка ${err}` });
     return;
   }
 
