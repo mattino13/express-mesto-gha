@@ -1,7 +1,7 @@
 const { ValidationError } = require('mongoose').Error;
 
 const NOT_FOUND_HTTP_STATUS = 404;
-const VALIDATION_FAILED_HTTP_STATUS = 404;
+const VALIDATION_FAILED_HTTP_STATUS = 400;
 const COMMON_SERVER_ERROR_STATUS = 500;
 
 class NotFoundError extends Error {}
