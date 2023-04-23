@@ -25,4 +25,4 @@ function handleHTTPError(err, res) {
   res.status(COMMON_SERVER_ERROR_STATUS).send({ message: `Произошла ошибка ${err}` });
 }
 
-module.exports = { handleHTTPError, NotFoundError };
+module.exports = { handleHTTPError, NotFoundError, NOT_FOUND_HTTP_STATUS };

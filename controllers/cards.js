@@ -13,8 +13,6 @@ function createCard(req, res) {
     name: req.body.name,
     link: req.body.link,
     owner: req.user._id,
-    likes: [],
-    createdAt: new Date(),
   })
     .then((card) => {
       card.populate(['owner', 'likes'])

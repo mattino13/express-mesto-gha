@@ -22,24 +22,23 @@ function createUser(req, res) {
     .catch((err) => handleHTTPError(err, res));
 }
 
-function updateUser(req, res) {
-  const { name, about } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+function updateUser(req, res, userData) {
+  User.findByIdAndUpdate(req.user._id, userData, { new: true, runValidators: true })
     .orFail(() => { throw new NotFoundError('Пользователь не найден'); })
     .then((user) => res.send(user))
     .catch((err) => handleHTTPError(err, res));
+}
+
+function updateUserInfo(req, res) {
+  const { name, about } = req.body;
+  updateUser(req, res, { name, about });
 }
 
 function updateUserAvatar(req, res) {
   const { avatar } = req.body;
-
-  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail(() => { throw new NotFoundError('Пользователь не найден'); })
-    .then((user) => res.send(user))
-    .catch((err) => handleHTTPError(err, res));
+  updateUser(req, res, { avatar });
 }
 
 module.exports = {
-  findUsers, findUserById, createUser, updateUser, updateUserAvatar,
+  findUsers, findUserById, createUser, updateUserInfo, updateUserAvatar,
 };

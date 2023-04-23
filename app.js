@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const usersRouter = require('./routes/users');
-const cardsRouter = require('./routes/cards');
+const appRouter = require('./routes/index');
+const { NOT_FOUND_HTTP_STATUS } = require('./utils/errors');
 
 const { PORT = 3000 } = process.env;
 
@@ -19,9 +19,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', cardsRouter);
-app.use('/', usersRouter);
-app.use('*', (req, res) => { res.status(404).send({ message: 'Not implemented' }); });
+app.use('/', appRouter);
+app.use('*', (req, res) => { res.status(NOT_FOUND_HTTP_STATUS).send({ message: 'Not implemented' }); });
 
 app.listen(PORT, () => {
   console.log(`App starting on port ${PORT}`);
