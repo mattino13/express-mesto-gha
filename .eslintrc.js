@@ -13,5 +13,7 @@ module.exports = {
   },
   rules: {
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
+    'max-classes-per-file': ['off'],
+    'no-unused-vars': ['warn'],
   },
 };

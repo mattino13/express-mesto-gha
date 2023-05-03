@@ -1,14 +1,14 @@
 const Card = require('../models/card');
-const { handleHTTPError, NotFoundError } = require('../utils/errors');
+const { NotFoundError, ForbiddenError } = require('../utils/errors');
 
-function findCards(req, res) {
+function findCards(req, res, next) {
   Card.find({})
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
-    .catch((err) => handleHTTPError(err, res));
+    .catch(next);
 }
 
-function createCard(req, res) {
+function createCard(req, res, next) {
   Card.create({
     name: req.body.name,
     link: req.body.link,
@@ -17,19 +17,28 @@ function createCard(req, res) {
     .then((card) => {
       card.populate(['owner', 'likes'])
         .then((result) => res.status(201).send(result))
-        .catch((err) => handleHTTPError(err, res));
+        .catch(next);
     })
-    .catch((err) => handleHTTPError(err, res));
+    .catch(next);
 }
 
-function deleteCard(req, res) {
-  Card.findByIdAndRemove(req.params.cardId)
+function deleteCard(req, res, next) {
+  Card.findById(req.params.cardId)
     .orFail(() => { throw new NotFoundError('Карточка не найдена'); })
-    .then(() => res.send({ message: 'Карточка удалена' }))
-    .catch((err) => handleHTTPError(err, res));
+    .then((card) => {
+      if (card.owner.toString() === req.user._id) {
+        Card.findByIdAndRemove(req.params.cardId)
+          .orFail(() => { throw new NotFoundError('Карточка не найдена'); })
+          .then(() => res.send({ message: 'Карточка удалена' }))
+          .catch(next);
+      } else {
+        throw new ForbiddenError('Удалять чужие карточки запрещено');
+      }
+    })
+    .catch(next);
 }
 
-function likeCard(req, res) {
+function likeCard(req, res, next) {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -38,10 +47,10 @@ function likeCard(req, res) {
     .orFail(() => { throw new NotFoundError('Карточка не найдена'); })
     .populate(['owner', 'likes'])
     .then((card) => res.status(201).send(card))
-    .catch((err) => handleHTTPError(err, res));
+    .catch(next);
 }
 
-function resetLikeCard(req, res) {
+function resetLikeCard(req, res, next) {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -50,7 +59,7 @@ function resetLikeCard(req, res) {
     .orFail(() => { throw new NotFoundError('Карточка не найдена'); })
     .populate(['owner', 'likes'])
     .then((card) => res.send(card))
-    .catch((err) => handleHTTPError(err, res));
+    .catch(next);
 }
 
 module.exports = {
