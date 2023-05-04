@@ -11,11 +11,19 @@ function findUsers(req, res, next) {
     .catch(next);
 }
 
-function findMe(req, res, next) {
-  User.findById(req.user._id)
+function findUserByIdCore(res, next, userId) {
+  User.findById(userId)
     .orFail(() => { throw new NotFoundError('Пользователь не найден'); })
     .then((user) => res.send(user))
     .catch(next);
+}
+
+function findUserById(req, res, next) {
+  findUserByIdCore(res, next, req.params.userId);
+}
+
+function findMe(req, res, next) {
+  findUserByIdCore(res, next, req.user._id);
 }
 
 function generateToken(payload) {
@@ -110,5 +118,6 @@ module.exports = {
   updateUserInfo,
   updateUserAvatar,
   login,
+  findUserById,
   findMe,
 };

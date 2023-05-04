@@ -5,11 +5,22 @@ const {
   findUsers,
   updateUserInfo,
   updateUserAvatar,
+  findUserById,
   findMe,
 } = require('../controllers/users');
 
 usersRouter.get('/', findUsers);
 usersRouter.get('/me', findMe);
+usersRouter.get(
+  '/:userId',
+  celebrate({
+    params: Joi.object().keys({
+      userId: Joi.string().alphanum().length(24),
+    }),
+  }),
+  findUserById,
+);
+
 usersRouter.patch(
   '/me',
   celebrate({
@@ -20,6 +31,7 @@ usersRouter.patch(
   }),
   updateUserInfo,
 );
+
 usersRouter.patch(
   '/me/avatar',
   celebrate({
