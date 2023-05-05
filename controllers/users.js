@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { jwtSecretKey } = require('../utils/sercetKey');
+const { CREATED_HTTP_STATUS } = require('../utils/consts');
 
 const User = require('../models/user');
 const { NotFoundError, UnauthorizedError } = require('../utils/errors');
@@ -43,14 +44,11 @@ function login(req, res, next) {
         return Promise.reject(new UnauthorizedError('Неправильные e-mail или пароль'));
       }
 
-      try {
-        const token = generateToken({ _id: user._id });
-        res.cookie('jwt', token, { httpOnly: true });
-        res.send({ success: true });
-        return Promise.resolve();
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      const token = generateToken({ _id: user._id });
+      res.cookie('jwt', token, { httpOnly: true });
+      res.send({ success: true });
+      // для того, чтобы ушла ошибка linter 'consistent-return'
+      return Promise.resolve();
     })
     .catch(next);
 }
@@ -82,7 +80,7 @@ function createUser(req, res, next) {
         email: e,
       } = user;
 
-      res.status(201).send(
+      res.status(CREATED_HTTP_STATUS).send(
         {
           _id,
           name: n,

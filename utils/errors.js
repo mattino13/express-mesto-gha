@@ -1,36 +1,16 @@
 const { ValidationError, CastError } = require('mongoose').Error;
 
-const NOT_FOUND_HTTP_STATUS = 404;
-const UNAUTHORIZED_HTTP_STATUS = 401;
-const BAD_REQUEST_HTTP_STATUS = 400;
-const FORBIDDEN_HTTP_STATUS = 403;
-const CONFLICT_HTTP_STATUS = 409;
-const COMMON_SERVER_ERROR_STATUS = 500;
+const { HTTPError } = require('./HTTPError');
+const { ForbiddenError } = require('./ForbiddenError');
+const { NotFoundError } = require('./NotFoundError');
+const { NotImplementedError } = require('./NotImplementedError');
+const { UnauthorizedError } = require('./UnauthorizedError');
 
-class HTTPError extends Error {
-  constructor(message, statusCode) {
-    super(message);
-    this.statusCode = statusCode;
-  }
-}
-
-class NotFoundError extends HTTPError {
-  constructor(message) {
-    super(message, NOT_FOUND_HTTP_STATUS);
-  }
-}
-
-class UnauthorizedError extends HTTPError {
-  constructor(message) {
-    super(message, UNAUTHORIZED_HTTP_STATUS);
-  }
-}
-
-class ForbiddenError extends HTTPError {
-  constructor(message) {
-    super(message, FORBIDDEN_HTTP_STATUS);
-  }
-}
+const {
+  BAD_REQUEST_HTTP_STATUS,
+  CONFLICT_HTTP_STATUS,
+  COMMON_SERVER_ERROR_STATUS,
+} = require('./consts');
 
 function handleServerError(err, res) {
   if (err instanceof HTTPError) {
@@ -62,5 +42,5 @@ module.exports = {
   NotFoundError,
   UnauthorizedError,
   ForbiddenError,
-  NOT_FOUND_HTTP_STATUS,
+  NotImplementedError,
 };

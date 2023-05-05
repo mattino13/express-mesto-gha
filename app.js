@@ -5,7 +5,7 @@ const { errors } = require('celebrate');
 
 const appRouter = require('./routes/index');
 
-const { NOT_FOUND_HTTP_STATUS, handleServerError } = require('./utils/errors');
+const { handleServerError, NotImplementedError } = require('./utils/errors');
 
 const { PORT = 3000 } = process.env;
 
@@ -17,10 +17,13 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/', appRouter);
-app.use('*', (req, res) => { res.status(NOT_FOUND_HTTP_STATUS).send({ message: 'Not implemented' }); });
+app.use('*', () => { throw new NotImplementedError('Not implemented'); });
 
 app.use(errors());
 
+// не придумала другого способа, как сохранить централизованную обработку ошибок
+// (требует 4 параметра в коллбэке) и при этом отсутствие ошибки от линтера
+// eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
   handleServerError(error, res);
 });
